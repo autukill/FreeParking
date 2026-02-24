@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FreeParkingMaui.ViewModels"
+             xmlns:converters="clr-namespace:FreeParkingMaui.Converters"
+             x:Class="FreeParkingMaui.Views.MainPage"
+             x:DataType="vm:MainViewModel"
+             Title="Parking Monitor"
+             BackgroundColor="#F5F5F5">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:BoolToStatusTextConverter x:Key="BoolToStatusTextConverter"/>
+            <converters:BoolToColorConverter x:Key="BoolToColorConverter"/>
+            <converters:BoolToStartStopTextConverter x:Key="BoolToStartStopTextConverter"/>
+            <converters:BoolToStartStopColorConverter x:Key="BoolToStartStopColorConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, *, Auto" Padding="12">
+        
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+            <Border Padding="12,8" 
+                    StrokeShape="RoundRectangle 8" 
+                    BackgroundColor="White" 
+                    Stroke="Transparent"
+                    HorizontalOptions="Center">
+                <HorizontalStackLayout Spacing="8">
+                    <Label Text="{Binding IsMonitoring, Converter={StaticResource BoolToStatusTextConverter}}"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="#333"
+                           VerticalOptions="Center"/>
+                    <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5"
+                             Color="{Binding IsMonitoring, Converter={StaticResource BoolToColorConverter}}"
+                             VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+            </Border>
+            
+            <Button Grid.Column="1"
+                    Text="⚙"
+                    FontSize="16"
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    CornerRadius="20"
+                    BackgroundColor="White"
+                    TextColor="#666"
+                    Command="{Binding ShowEmailSettingsCommand}"
+                    VerticalOptions="Center"/>
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="10" Padding="0,10,0,0">
+
+                <Border Padding="10" StrokeShape="RoundRectangle 8" BackgroundColor="White" Stroke="Transparent">
+                    <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="6">
+                        <Grid Grid.Row="0" ColumnDefinitions="80, *" ColumnSpacing="8">
+                            <Label Text="User:" TextColor="#888" FontSize="13" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="{Binding UserPhone}" FontSize="14" FontAttributes="Bold" TextColor="#333" VerticalOptions="Center"/>
+                        </Grid>
+                        <Grid Grid.Row="1" ColumnDefinitions="80, *" ColumnSpacing="8">
+                            <Label Text="Area:" TextColor="#888" FontSize="13" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="{Binding AreaName}" FontSize="14" FontAttributes="Bold" TextColor="#333" VerticalOptions="Center"/>
+                        </Grid>
+                        <Grid Grid.Row="2" ColumnDefinitions="80, *" ColumnSpacing="8">
+                            <Label Text="Status:" TextColor="#888" FontSize="13" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="{Binding ApiStatusText}" FontSize="14" TextColor="#007AFF" VerticalOptions="Center"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <Border Padding="10" StrokeShape="RoundRectangle 8" BackgroundColor="White" Stroke="Transparent" IsVisible="{Binding HasTimeInfo}">
+                    <Grid RowDefinitions="Auto, Auto" RowSpacing="6">
+                        <HorizontalStackLayout Spacing="6" HorizontalOptions="Center">
+                            <Label Text="Last:" TextColor="#888" FontSize="13" VerticalOptions="Center"/>
+                            <Label Text="{Binding LastCheckTime}" FontSize="14" TextColor="#333" VerticalOptions="Center"/>
+                            <Label Text="  Next:" TextColor="#888" FontSize="13" VerticalOptions="Center"/>
+                            <Label Text="{Binding NextCheckTime}" FontSize="14" TextColor="#333" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                        <Border Grid.Row="1" 
+                                Padding="8,4" 
+                                StrokeShape="RoundRectangle 6" 
+                                BackgroundColor="#FFF3E0"
+                                HorizontalOptions="Center"
+                                Margin="0,4,0,0">
+                            <HorizontalStackLayout Spacing="6">
+                                <Label Text="Countdown:" TextColor="#888" FontSize="12" VerticalOptions="Center"/>
+                                <Label Text="{Binding CountdownText}" FontSize="20" FontAttributes="Bold" TextColor="#FF9800" VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Border Padding="10" StrokeShape="RoundRectangle 8" BackgroundColor="White" Stroke="Transparent"
+                        IsVisible="{Binding HasOrder}">
+                    <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="6">
+                        <Label Text="Latest Order" TextColor="#007AFF" FontSize="13" FontAttributes="Bold"/>
+                        <Grid Grid.Row="1" ColumnDefinitions="*, *" ColumnSpacing="10">
+                            <HorizontalStackLayout Spacing="4">
+                                <Label Text="State:" TextColor="#888" FontSize="12"/>
+                                <Label Text="{Binding LatestOrder.StateName}" FontSize="13" TextColor="#333" FontAttributes="Bold"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="Car:" TextColor="#888" FontSize="12"/>
+                                <Label Text="{Binding LatestOrder.Car}" FontSize="13" TextColor="#333" FontAttributes="Bold"/>
+                            </HorizontalStackLayout>
+                        </Grid>
+                        <Grid Grid.Row="2" ColumnDefinitions="*, *" ColumnSpacing="10">
+                            <HorizontalStackLayout Spacing="4">
+                                <Label Text="Start:" TextColor="#888" FontSize="12"/>
+                                <Label Text="{Binding LatestOrder.StartTime}" FontSize="12" TextColor="#333"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="Park:" TextColor="#888" FontSize="12"/>
+                                <Label Text="{Binding LatestOrder.ParkName}" FontSize="12" TextColor="#333"/>
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid Grid.Row="2" RowDefinitions="Auto, Auto" RowSpacing="8" Padding="0,8,0,0">
+            <Grid Grid.Row="0" ColumnDefinitions="*, *" ColumnSpacing="10">
+                <Button Grid.Column="0"
+                        Text="Check Now"
+                        Command="{Binding CheckOrderCommand}"
+                        BackgroundColor="#007AFF"
+                        TextColor="White"
+                        CornerRadius="20"
+                        HeightRequest="40"
+                        FontSize="14"/>
+                <Button Grid.Column="1"
+                        Text="Logout"
+                        Command="{Binding LogoutCommand}"
+                        BackgroundColor="White"
+                        TextColor="#DD524D"
+                        BorderColor="#DD524D"
+                        BorderWidth="1"
+                        CornerRadius="20"
+                        HeightRequest="40"
+                        FontSize="14"/>
+            </Grid>
+
+            <Button Grid.Row="1"
+                    Text="{Binding IsMonitoring, Converter={StaticResource BoolToStartStopTextConverter}}"
+                    Command="{Binding ToggleMonitoringCommand}"
+                    BackgroundColor="{Binding IsMonitoring, Converter={StaticResource BoolToStartStopColorConverter}}"
+                    TextColor="White"
+                    CornerRadius="20"
+                    HeightRequest="44"
+                    FontSize="15"
+                    FontAttributes="Bold"/>
+        </Grid>
+
+    </Grid>
+
+</ContentPage>

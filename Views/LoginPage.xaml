@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FreeParkingMaui.ViewModels"
+             xmlns:converters="clr-namespace:FreeParkingMaui.Converters"
+             x:Class="FreeParkingMaui.Views.LoginPage"
+             x:DataType="vm:LoginViewModel"
+             Title="Login"
+             BackgroundColor="#F5F5F5">
+    
+    <ContentPage.Resources>
+        <ResourceDictionary>
+             <converters:InvertedBoolConverter x:Key="InvertedBoolConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="20">
+            
+            <Image Source="dotnet_bot.png"
+                   HeightRequest="150"
+                   HorizontalOptions="Center" />
+
+            <Label Text="Parking Monitor"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="#333333" />
+
+            <Border Padding="10" StrokeShape="RoundRectangle 10" BackgroundColor="White" Stroke="Transparent">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Area" TextColor="Gray" FontSize="12"/>
+                    <Picker ItemsSource="{Binding Areas}"
+                            SelectedItem="{Binding SelectedArea}"
+                            ItemDisplayBinding="{Binding Name}"
+                            TextColor="Black" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Padding="10" StrokeShape="RoundRectangle 10" BackgroundColor="White" Stroke="Transparent">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Phone Number" TextColor="Gray" FontSize="12"/>
+                    <Entry Text="{Binding PhoneNumber}"
+                           Keyboard="Telephone"
+                           Placeholder="Enter Phone"
+                           TextColor="Black"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Padding="10" StrokeShape="RoundRectangle 10" BackgroundColor="White" Stroke="Transparent">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Verification Code" TextColor="Gray" FontSize="12"/>
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                        <Entry Grid.Column="0"
+                               Text="{Binding AuthCode}"
+                               Keyboard="Numeric"
+                               Placeholder="Code"
+                               MaxLength="4"
+                               TextColor="Black"/>
+                        
+                        <Button Grid.Column="1"
+                                Text="Get Code"
+                                Command="{Binding GetCodeCommand}"
+                                IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                BackgroundColor="#007AFF"
+                                TextColor="White"
+                                HeightRequest="40"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="{Binding StatusMessage}"
+                   TextColor="Red"
+                   HorizontalOptions="Center" />
+
+            <Button Text="Login"
+                    Command="{Binding LoginCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                    BackgroundColor="#007AFF"
+                    TextColor="White"
+                    CornerRadius="25"
+                    HeightRequest="50"
+                    Margin="0,20,0,0"/>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               Color="#007AFF"
+                               HorizontalOptions="Center" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
