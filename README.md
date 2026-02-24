@@ -65,6 +65,12 @@ Main monitoring interface with the following features:
 - **Action Buttons**: Check now, logout, start/stop monitoring
 - **Email Settings**: Click the settings button in the top right to configure SMTP email
 
+## Screenshots
+
+| Login Page | Main Page |
+|:----------:|:---------:|
+| ![Login Page](Screenshot_2026-02-24-21-27-45-685_FreeParkingMaui.jpg) | ![Main Page](Screenshot_2026-02-24-21-27-55-598_FreeParkingMaui.jpg) |
+
 ## Configuration
 
 ### Email Configuration (QQ Mail)
