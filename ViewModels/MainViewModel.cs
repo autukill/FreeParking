@@ -11,6 +11,7 @@ public partial class MainViewModel : ObservableObject
 {
     private readonly ApiService _apiService;
     private readonly EmailService _emailService;
+    private readonly AudioService _audioService;
     private System.Timers.Timer _timer;
     private System.Timers.Timer _countdownTimer;
     private int _countdownSeconds = 600;
@@ -55,10 +56,11 @@ public partial class MainViewModel : ObservableObject
 
     public IAsyncRelayCommand ShowEmailSettingsCommand { get; }
 
-    public MainViewModel(ApiService apiService, EmailService emailService)
+    public MainViewModel(ApiService apiService, EmailService emailService, AudioService audioService)
     {
         _apiService = apiService;
         _emailService = emailService;
+        _audioService = audioService;
 
         _timer = new System.Timers.Timer(10 * 60 * 1000); // 10 minutes
         _timer.Elapsed += async (s, e) => await CheckOrder();
@@ -70,6 +72,8 @@ public partial class MainViewModel : ObservableObject
         CountdownText = "600s";
 
         ShowEmailSettingsCommand = new AsyncRelayCommand(ShowEmailSettingsAsync);
+
+        _audioService.PlayNotificationSound();
     }
 
     [RelayCommand]
@@ -160,14 +164,26 @@ public partial class MainViewModel : ObservableObject
             HasOrder = true;
             ApiStatusText = "OK";
             LastCheckTime = DateTime.Now.ToString("HH:mm:ss");
-            NextCheckTime = DateTime.Now.AddMinutes(10).ToString("HH:mm:ss");
             HasTimeInfo = true;
 
-            _countdownSeconds = 600;
+            // 根据订单状态设置倒计时时间
+            if (LatestOrder.State != 3)
+            {
+                // 未完成订单，5分钟检查一次
+                _countdownSeconds = 300;
+                NextCheckTime = DateTime.Now.AddMinutes(5).ToString("HH:mm:ss");
+            }
+            else
+            {
+                // 已完成订单，10分钟检查一次
+                _countdownSeconds = 600;
+                NextCheckTime = DateTime.Now.AddMinutes(10).ToString("HH:mm:ss");
+            }
 
             if (LatestOrder.State != 3)
             {
-                if (_lastOrderState == 3 || _lastOrderState == -1)
+                // 首次检测到订单状态未完成, 那么发送新订单邮件
+                if (_lastOrderState != LatestOrder.State)
                 {
                     var emailResult = await _emailService.SendEmailAsync("New Parking Order", 
                         $"Car: {LatestOrder.Car}\nPark: {LatestOrder.ParkName}\nTime: {LatestOrder.StartTime}");
@@ -176,8 +192,13 @@ public partial class MainViewModel : ObservableObject
                         await ShowToastAsync(emailResult.Message);
                     }
                 }
+
+                // android 手机发出提示音
+                _audioService.PlayNotificationSound();
+
             }
             _lastOrderState = LatestOrder.State;
+ 
         }
         else
         {

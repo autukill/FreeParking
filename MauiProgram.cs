@@ -25,6 +25,7 @@ namespace FreeParkingMaui
             // Services
             builder.Services.AddSingleton<ApiService>();
             builder.Services.AddSingleton<EmailService>();
+            builder.Services.AddSingleton<AudioService>();
 
             // ViewModels
             builder.Services.AddTransient<LoginViewModel>();
