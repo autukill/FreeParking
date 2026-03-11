@@ -44,7 +44,7 @@ public partial class LoginViewModel : ObservableObject
         IsBusy = true;
         StatusMessage = "Sending code...";
         
-        var response = await _apiService.GetVerificationCodeAsync(PhoneNumber);
+        var response = await _apiService.GetVerificationCodeAsync(PhoneNumber, SelectedArea?.AppId ?? Areas[0].AppId);
         
         IsBusy = false;
         if (response.Status == 1 || response.Message == "OK")

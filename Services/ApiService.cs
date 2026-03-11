@@ -22,12 +22,12 @@ public class ApiService
         }
     }
 
-    public async Task<VerificationCodeResponse> GetVerificationCodeAsync(string phone)
+    public async Task<VerificationCodeResponse> GetVerificationCodeAsync(string phone, string appId)
     {
         try
         {
-            // URL: /api/Customer/GetVerificationCode?phoneNumber=...&AppId=hnacyb
-            var response = await _httpClient.PostAsync($"/api/Customer/GetVerificationCode?phoneNumber={phone}&AppId=hnacyb", null);
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+            var response = await _httpClient.PostAsync($"/api/Customer/GetVerificationCode?phoneNumber={phone}&AppId={appId}", null);
             return await response.Content.ReadFromJsonAsync<VerificationCodeResponse>();
         }
         catch (Exception ex)
@@ -40,6 +40,7 @@ public class ApiService
     {
         try
         {
+            _httpClient.DefaultRequestHeaders.Authorization = null;
             var payload = new { phone, code, areaId };
             var response = await _httpClient.PostAsJsonAsync("/api/application/user/phoneAuthorization", payload);
             
@@ -79,6 +80,39 @@ public class ApiService
         catch (Exception ex)
         {
             return new OrderResponse { Status = 0, Message = ex.Message };
+        }
+    }
+
+    public async Task<PayResponse> PayManualOrderAsync(string areaId, string carNumber)
+    {
+        try
+        {
+            await SetAuthHeaderAsync();
+            var payload = new 
+            { 
+                PayType = 4, 
+                AreaId = areaId, 
+                carNumber = carNumber, 
+                CarPointCode = "", 
+                PayOrderIdList = new List<string>() 
+            };
+            var response = await _httpClient.PostAsJsonAsync("/api/OrderRefact/OrderPay", payload);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                return new PayResponse { Status = 401, Message = "Unauthorized" };
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<PayResponse>();
+            }
+            
+            return new PayResponse { Status = 0, Message = "Payment failed: " + response.ReasonPhrase };
+        }
+        catch (Exception ex)
+        {
+            return new PayResponse { Status = 0, Message = ex.Message };
         }
     }
 }

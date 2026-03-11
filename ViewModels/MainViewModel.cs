@@ -53,6 +53,7 @@ public partial class MainViewModel : ObservableObject
     private string _smtpPassword;
 
     private int _lastOrderState = -1;
+    private bool _manualPayAttempted = false;
 
     public IAsyncRelayCommand ShowEmailSettingsCommand { get; }
 
@@ -185,6 +186,8 @@ public partial class MainViewModel : ObservableObject
                 // 首次检测到订单状态未完成, 那么发送新订单邮件
                 if (_lastOrderState != LatestOrder.State)
                 {
+                    _manualPayAttempted = false;
+
                     var emailResult = await _emailService.SendEmailAsync("New Parking Order", 
                         $"Car: {LatestOrder.Car}\nPark: {LatestOrder.ParkName}\nTime: {LatestOrder.StartTime}");
                     if (!emailResult.Success)
@@ -193,9 +196,32 @@ public partial class MainViewModel : ObservableObject
                     }
                 }
 
+                // 首次检测到人工收费订单且未尝试支付，自动支付
+                if (LatestOrder.TypeName == "人工收费" && !_manualPayAttempted)
+                {
+                    _manualPayAttempted = true;
+                    var payResult = await _apiService.PayManualOrderAsync(LatestOrder.AreaId, LatestOrder.Car);
+                    if (payResult.Status == 1)
+                    {
+                        _countdownSeconds = 10;
+                        NextCheckTime = DateTime.Now.AddSeconds(10).ToString("HH:mm:ss");
+
+                        var payEmailResult = await _emailService.SendEmailAsync("Manual Order Paid", 
+                            $"Car: {LatestOrder.Car}\nPark: {LatestOrder.ParkName}\nTime: {LatestOrder.StartTime}\n\n人工收费订单已自动支付成功");
+                        if (!payEmailResult.Success)
+                        {
+                            await ShowToastAsync(payEmailResult.Message);
+                        }
+                    }
+                }
+
                 // android 手机发出提示音
                 _audioService.PlayNotificationSound();
 
+            }
+            else
+            {
+                _manualPayAttempted = false;
             }
             _lastOrderState = LatestOrder.State;
  

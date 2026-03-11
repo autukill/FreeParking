@@ -35,6 +35,7 @@ public class OrderResponse
 public class OrderData
 {
     public string Code { get; set; }
+    public string AreaId { get; set; }
     public string CarPointCode { get; set; }
     public string AreaName { get; set; }
     public string Car { get; set; }
@@ -46,6 +47,7 @@ public class OrderData
     public string UseTime { get; set; }
     public int State { get; set; }
     public string StateName { get; set; }
+    public string TypeName { get; set; }
     public decimal OrderPrice { get; set; }
     public string PaymentTime { get; set; }
 }
@@ -54,4 +56,18 @@ public class Area
 {
     public string Id { get; set; }
     public string Name { get; set; }
+    public string AppId { get; set; }
+}
+
+public class PayResponse
+{
+    public PayData Data { get; set; }
+    public int Status { get; set; }
+    public string Message { get; set; }
+}
+
+public class PayData
+{
+    public string PayLogId { get; set; }
+    public int PayType { get; set; }
 }

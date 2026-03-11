@@ -14,7 +14,7 @@ public static class Constants
 
     public static readonly List<Area> Areas =
     [
-        new Area { Id = "c7bd547b-fb67-4554-a1e5-0842f69f4e56", Name = "华宁县" }
+        new Area { Id = "c7bd547b-fb67-4554-a1e5-0842f69f4e56", Name = "华宁县", AppId = "hnacyb" }
     ];
 
     public const string SmtpHost = "smtp.qq.com";

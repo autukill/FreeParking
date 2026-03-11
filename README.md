@@ -8,6 +8,7 @@ An Android smart parking monitoring application built with .NET MAUI for real-ti
 - **Area Selection**: Support for multiple parking area selection
 - **Real-time Monitoring**: Automatically query latest parking orders every 10 minutes
 - **Email Notifications**: Automatic email alerts when new orders are detected
+- **Auto Payment**: Automatically pay for manual parking orders (人工收费) when detected
 - **Background Operation**: Keep screen on to ensure uninterrupted monitoring
 - **Email Configuration**: Dynamic SMTP email configuration support
 
