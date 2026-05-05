@@ -11,6 +11,7 @@ public static class Constants
     public const string UserPhoneKey = "user_phone";
     public const string AreaIdKey = "area_id";
     public const string AreaNameKey = "area_name";
+    public const string TokenExpiresKey = "token_expires";
 
     public static readonly List<Area> Areas =
     [

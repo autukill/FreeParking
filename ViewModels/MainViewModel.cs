@@ -74,7 +74,7 @@ public partial class MainViewModel : ObservableObject
 
         ShowEmailSettingsCommand = new AsyncRelayCommand(ShowEmailSettingsAsync);
 
-        _audioService.PlayNotificationSound();
+        //_audioService.PlayNotificationSound();
     }
 
     [RelayCommand]
@@ -111,6 +111,20 @@ public partial class MainViewModel : ObservableObject
     {
         if (IsMonitoring) return;
 
+        // Check if token will expire within 5 days
+        var expiresStr = await SecureStorage.GetAsync(Constants.TokenExpiresKey);
+        if (!string.IsNullOrEmpty(expiresStr))
+        {
+            if (DateTime.TryParse(expiresStr, out var expires))
+            {
+                var daysUntilExpiry = (expires - DateTime.Now).TotalDays;
+                if (daysUntilExpiry <= 5)
+                {
+                    await ShowToastAsync($"Token 将在 {daysUntilExpiry:F1} 天后过期，请及时重新登录");
+                }
+            }
+        }
+
         IsMonitoring = true;
         ApiStatusText = "监控中";
         
@@ -119,7 +133,7 @@ public partial class MainViewModel : ObservableObject
         var emailResult = await _emailService.SendEmailAsync("Parking Monitor Started", 
             $"监控已启动\n用户: {UserPhone}\n区域: {AreaName}\n时间: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
          
-        await ShowToastAsync(emailResult.Message);
+        // await ShowToastAsync(emailResult.Message);
 
         _timer.Start();
         _countdownTimer.Start();

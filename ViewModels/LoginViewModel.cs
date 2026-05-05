@@ -79,6 +79,7 @@ public partial class LoginViewModel : ObservableObject
             await SecureStorage.SetAsync(Constants.UserPhoneKey, PhoneNumber);
             await SecureStorage.SetAsync(Constants.AreaIdKey, SelectedArea!.Id);
             await SecureStorage.SetAsync(Constants.AreaNameKey, SelectedArea.Name);
+            await SecureStorage.SetAsync(Constants.TokenExpiresKey, response.Data.Expires);
 
             StatusMessage = "Login Successful!";
             
